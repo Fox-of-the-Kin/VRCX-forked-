@@ -93,8 +93,14 @@ mixin settingsTab()
                                 .detail
                                     span.name(v-text="group.displayName ? group.displayName : group.name")
                 //- General | Game Log
-                +simpleSettingsCategory("view.settings.general.game_log.header")
-                    +simpleSwitch("view.settings.general.game_log.resource_load", "logResourceLoad", "saveGameLogOptions")
+                div.options-container
+                    span.header {{ $t('view.settings.general.logging.header') }}
+                    div.options-container-item
+                        span.name(style="min-width:225px") {{ $t('view.settings.general.logging.resource_load') }}
+                        el-switch(v-model="logResourceLoad" @change="saveLoggingOptions")
+                    div.options-container-item
+                        span.name(style="min-width:225px") {{ $t('view.settings.general.logging.empty_avatar') }}
+                        el-switch(v-model="logEmptyAvatars" @change="saveLoggingOptions")
                 //- General | Automation
                 +simpleSettingsCategory("view.settings.general.automation.header")
                     +simpleRadioGroupWithTooltip("view.settings.general.automation.auto_state_change", "$t('view.settings.general.automation.auto_state_change_tooltip')", "autoStateChange", [
@@ -104,6 +110,11 @@ mixin settingsTab()
                         { label: "Join Me or Ask Me", translationKey: "view.settings.general.automation.auto_state_change_join_me_or_ask_me" },
                         { label: "Join Me or Busy", translationKey: "view.settings.general.automation.auto_state_change_join_me_or_busy" },
                         { label: "Ask Me or Busy", translationKey: "view.settings.general.automation.auto_state_change_ask_me_or_busy" },
+                    ], "saveAutomationOptions")
+                    +simpleRadioGroupWithTooltip("view.settings.general.automation.auto_invite_request_accept", "$t('view.settings.general.automation.auto_invite_request_accept_tooltip')", "autoAcceptInviteRequests", [
+                        { label: "Off", translationKey: "view.settings.general.automation.auto_invite_request_accept_off" },
+                        { label: "All Favorites", translationKey: "view.settings.general.automation.auto_invite_request_accept_favs" },
+                        { label: "Selected Favorites", translationKey: "view.settings.general.automation.auto_invite_request_accept_selected_favs" },
                     ], "saveAutomationOptions")
                 //- General | Contributors
                 div.options-container
@@ -318,6 +329,8 @@ mixin settingsTab()
                 div.options-container(style="margin-top:0")
                     span.header {{ $t('view.settings.wrist_overlay.steamvr_wrist_overlay.header') }}
                     div.options-container-item
+                        el-button(size="small" icon="el-icon-notebook-2" @click="showWristFeedFiltersDialog" :disabled="!openVR || !overlayWrist") {{ $t('view.settings.wrist_overlay.steamvr_wrist_overlay.wrist_feed_filters') }}
+                    div.options-container-item
                         span {{ $t('view.settings.wrist_overlay.steamvr_wrist_overlay.description') }}
                         br
                         br
@@ -364,8 +377,6 @@ mixin settingsTab()
                     div.options-container-item
                         span.name {{ $t('view.settings.wrist_overlay.steamvr_wrist_overlay.show_pc_uptime') }}
                         el-switch(v-model="pcUptimeOnFeed" @change="saveOpenVROption" :disabled="!openVR || !overlayWrist")
-                    div.options-container-item
-                        el-button(size="small" icon="el-icon-notebook-2" @click="showWristFeedFiltersDialog" :disabled="!openVR || !overlayWrist") {{ $t('view.settings.wrist_overlay.steamvr_wrist_overlay.wrist_feed_filters') }}
             //- Discord Presence Tab
             el-tab-pane(:label="$t('view.settings.category.discord_presence')")
                 div.options-container(style="margin-top:0")
@@ -476,6 +487,8 @@ mixin settingsTab()
                     span.header {{ $t('view.settings.advanced.advanced.youtube_api.header') }}
                     div.options-container-item
                         span.name {{ $t('view.settings.advanced.advanced.youtube_api.enable') }}
+                            el-tooltip(placement="top" style="margin-left:5px" :content="$t('view.settings.advanced.advanced.youtube_api.enable_tooltip')")
+                                i.el-icon-info
                         el-switch(v-model="youTubeApi" @change="changeYouTubeApi")
                     div.options-container-item
                         el-button(size="small" icon="el-icon-caret-right" @click="showYouTubeApiDialog") {{ $t('view.settings.advanced.advanced.youtube_api.youtube_api_key') }}
